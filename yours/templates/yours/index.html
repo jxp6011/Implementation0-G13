@@ -1,0 +1,60 @@
+{% extends "yours_base/base_with_navbar.html" %}
+
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="post-list">
+  <div class="header">
+    <h2>Used Product</h2>
+    <a class="link" href="{% url 'post-create' %}">
+      <img class="pen-icon" src="{% static 'yours/icons/ic-pen.svg' %}" alt="pen icon">
+      <span>Writing</span>
+    </a>
+  </div>
+
+  <div class="posts">
+    {% for post in posts %}
+      <div class="yours-card post">
+        <img class="thumb" src="{{ post.image1.url }}" alt="Thumbnail image">
+        <div class="content">
+          <h2 class="title">{{ post.title }}</h2>
+          <div class="price-and-status">
+            <span class="price">
+              {{ post.item_price|intcomma }}USD
+            </span>
+          </div>
+          <div class="meta">
+            {{ post.dt_created|date:"Y.m.d" }}&nbsp;|&nbsp;{{ post.author.address }}
+          </div>
+          <a class="yours-button primary button" href="{% url 'post-detail' post.id %}">Details</a>
+        </div>
+      </div>
+    {% empty %}
+      <p class="empty">There's not a selling product currently :(</p>
+    {% endfor %}
+  </div>
+
+  {% if is_paginated %}
+    <ul class="pagination">
+      {% if page_obj.has_previous %}
+        <li><a href="?page=1">First</a></li>
+        <li><a href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li class="current">{{ num }}</li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <li><a href="?page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <li><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        <li><a href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+      {% endif %}
+    </ul>
+  {% endif %}
+</div>
+{% endblock content %}
